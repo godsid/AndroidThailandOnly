@@ -1,0 +1,2 @@
+AndroidThailandOnly
+===================
