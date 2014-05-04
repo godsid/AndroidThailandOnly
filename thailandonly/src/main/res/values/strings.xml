@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Thailand Only</string>
+    <string name="action_about">About Us</string>
+    <string name="title_activity_about_us">About Us</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="version">Version:</string>
+
+    <string-array name="section">
+        <item>Thailand Only</item>
+        <item>Amazing Thai Food</item>
+        <item>Bangkok</item>
+    </string-array>
+
+</resources>

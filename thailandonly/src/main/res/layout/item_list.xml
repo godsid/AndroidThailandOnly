@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="left|top"
+    android:paddingTop="5dp">
+    <ProgressBar
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/imageItemProgress"
+        android:layout_centerInParent="true"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageItem" />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/imageUser"
+        android:layout_gravity="left|top"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="false"
+        android:adjustViewBounds="false"
+        android:background="#00ffffff"
+        android:layout_alignParentLeft="false"
+        android:layout_alignWithParentIfMissing="false"
+        android:layout_alignRight="@+id/imageItem"
+        android:layout_alignTop="@+id/imageItem"
+        android:layout_marginTop="5dp"
+        android:cropToPadding="true"
+        android:padding="1dp"
+        android:maxWidth="50dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:id="@+id/textTitle"
+        android:background="@drawable/rounded_corner"
+        android:padding="5dp"
+        android:textColor="@android:color/black"
+        android:textIsSelectable="true"
+        android:layout_marginRight="50dp"
+        android:layout_alignTop="@+id/imageItem"
+        android:layout_alignLeft="@+id/imageItem"
+
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp" />
+</RelativeLayout>
