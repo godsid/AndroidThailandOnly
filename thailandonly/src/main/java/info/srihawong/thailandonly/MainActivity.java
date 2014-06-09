@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +29,7 @@ import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.Tracker;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.*;
 
 
 import org.json.JSONException;
@@ -55,11 +55,42 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 
     public static Tracker gaTracker;
 
+    public static InterstitialAd interstitialAds;
+    public AdRequest adRequest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        /*******************************************************/
+        //Create the interstitial Ads.
+        interstitialAds = new InterstitialAd(this);
+        interstitialAds.setAdUnitId(Config.adsInterstitialUnitIDFullPage);
+        interstitialAds.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                //super.onAdLoaded();
+                Log.d("tui","interstitial Ads Loaded");
+            }
+
+            @Override
+            public void onAdClosed() {
+                Log.d("tui","interstitial Ads Close");
+                interstitialAds.loadAd(adRequest);
+                //super.onAdClosed();
+            }
+        });
+
+        // Create ad request.
+        adRequest = new AdRequest.Builder()
+                .addKeyword(Config.adsInterstitialKeyword)
+                .build();
+
+        // Begin loading your interstitial.
+        interstitialAds.loadAd(adRequest);
+        /*******************************************************/
 
         // Set up the action bar to show a dropdown list.
         final ActionBar actionBar = getSupportActionBar();
@@ -126,6 +157,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        if(interstitialAds.isLoaded()){
+            interstitialAds.show();
+        }
+        super.onBackPressed();
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -145,8 +184,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
         ArrayList<ListItem> listItems;
         ListAdapter itemListAdapter;
         ListView listView;
+        AdView adView;
         Boolean loadMore = false;
         String hashTag = "";
+        ProgressBar progressBar;
+        private int page = 1;
         public static PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
@@ -165,13 +207,19 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 
             plusAPI = new PlusAPI();
             listView = (ListView) rootView.findViewById(R.id.listView);
+            progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+            adView = (AdView) rootView.findViewById(R.id.adView);
             listItems = new ArrayList<ListItem>();
             hashTag = getResources().getStringArray(R.array.section)[getArguments().getInt(ARG_SECTION_NUMBER)-1].replace(" ","").toLowerCase();
 
-            AdRequest.Builder adBuilder = new AdRequest.Builder();
-            AdRequest adRequest = adBuilder.build();
-            AdView adView = (AdView) rootView.findViewById(R.id.adView);
+            /*********** Ads request top ******************/
+            AdRequest adRequest = new AdRequest.Builder()
+                    .addKeyword(Config.adsInterstitialKeyword)
+                    .build();
+
             adView.loadAd(adRequest);
+            /**********************************************/
+
             return rootView;
         }
 
@@ -218,16 +266,23 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
             long cacheTime = PlusAPI.CACHE_TIME;
             if(nextPage) {
                 url = plusAPI.getUrlNextPage(hashTag);
+                page++;
             }else{
                 url = plusAPI.getUrl(hashTag);
+                page=1;
             }
             if(mPullToRefreshLayout.isRefreshing()){
                 cacheTime = -1;
             }
+            if(page==Config.adsInterstitialPageShow){
+                if(interstitialAds.isLoaded()){
+                    interstitialAds.show();
+                }
+            }
             aq.ajax(url, JSONObject.class,cacheTime,new AjaxCallback<JSONObject>(){
                 @Override
                 public void callback(String url, JSONObject json, AjaxStatus status) {
-
+                    progressBar.setVisibility(View.INVISIBLE);
                     Log.d("tui",url);
                     Log.d("tui","Http Code:"+String.valueOf(status.getCode()));
 
